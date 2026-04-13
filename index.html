@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Bliss 🎂</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Floating background particles -->
+    <div id="particles-bg"></div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-pill">
+            <span class="hdr-icon left">🎂</span>
+            <h1 class="site-title">Birthday Bliss</h1>
+            <span class="hdr-icon right">🎁</span>
+        </div>
+    </header>
+
+    <!-- ========== MAIN APP ========== -->
+    <main class="app-wrap">
+
+        <!-- Recipient banner (shown on shared gift) -->
+        <div class="recipient-banner" id="recipientBanner">
+            <span class="banner-bow">🎀</span>
+            <p>A special gift for <strong id="recipientNameDisplay">You</strong>! 💝</p>
+        </div>
+
+        <!-- Quby character + speech bubble -->
+        <div class="quby-section" id="qubySection">
+            <div class="speech-bubble" id="speechBubble">
+                <p id="speechText">Hey there! Will you accept this little token? 💝🤗</p>
+            </div>
+            <div class="quby-char" id="qubyChar">
+                <!-- SVG injected by JS -->
+            </div>
+        </div>
+
+        <!-- Gift box -->
+        <div class="gift-stage" id="giftStage">
+            <div class="gift-box" id="giftBox">
+                <!-- Lid -->
+                <div class="gift-lid" id="giftLid">
+                    <div class="lid-stripe"></div>
+                    <div class="lid-bow-wrap">
+                        <div class="bow-loop loop-l"></div>
+                        <div class="bow-loop loop-r"></div>
+                        <div class="bow-knot"></div>
+                    </div>
+                </div>
+                <!-- Body -->
+                <div class="gift-body">
+                    <div class="body-stripe"></div>
+                    <div class="body-shine"></div>
+                    <div class="body-shine shine-2"></div>
+                </div>
+            </div>
+
+            <!-- Surprise reveal -->
+            <div class="gift-surprise" id="giftSurprise">
+                <div class="surprise-inner" id="surpriseInner">
+                    <span class="surprise-emoji" id="surpriseEmoji">🎂🌸</span>
+                </div>
+                <div class="sparkle-ring" id="sparkleRing"></div>
+            </div>
+        </div>
+
+        <!-- Click hint -->
+        <p class="tap-hint" id="tapHint">✨ Tap the gift box to open! ✨</p>
+
+        <!-- Birthday note (from sender) -->
+        <div class="bday-note" id="bdayNote">
+            <div class="note-curl"></div>
+            <div class="note-body">
+                <span class="note-icon">💌</span>
+                <p id="noteText">Happy Birthday! 🎂 God bless you!</p>
+            </div>
+        </div>
+
+        <!-- Accept / Reject buttons -->
+        <div class="action-row" id="actionRow">
+            <button class="btn btn-accept" id="acceptBtn">
+                <span>🎀</span> Accept
+            </button>
+            <button class="btn btn-reject" id="rejectBtn">
+                <span>😤</span> Reject
+            </button>
+        </div>
+
+        <!-- Share floating button -->
+        <button class="share-fab" id="shareBtn">Share&nbsp;🎁</button>
+
+    </main>
+
+    <!-- ========== SHARE MODAL ========== -->
+    <div class="modal-veil" id="shareModalVeil">
+        <div class="share-modal" id="shareModal" role="dialog" aria-modal="true" aria-label="Create Gift">
+            <button class="modal-x" id="closeShareModal" aria-label="Close">✕</button>
+
+            <div class="modal-head">
+                <div class="modal-ribbon">🎁 Create Your Birthday Gift 🎁</div>
+                <p class="modal-sub">Customize &amp; send a gift to someone special!</p>
+            </div>
+
+            <!-- Gift type -->
+            <div class="form-block">
+                <label class="form-lbl">Choose Gift Bundle</label>
+                <div class="gift-type-row">
+                    <div class="gift-tile active" data-type="cake-flowers" tabindex="0">
+                        <div class="tile-emoji">🎂🌸</div>
+                        <p>Cake &amp;<br>Flowers</p>
+                    </div>
+                    <div class="gift-tile" data-type="cake-chocolates" tabindex="0">
+                        <div class="tile-emoji">🎂🍫</div>
+                        <p>Cake &amp;<br>Chocolates</p>
+                    </div>
+                    <div class="gift-tile" data-type="cake-teddy" tabindex="0">
+                        <div class="tile-emoji">🎂🧸</div>
+                        <p>Cake &amp;<br>Teddy</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recipient name -->
+            <div class="form-block">
+                <label class="form-lbl" for="recipientInput">👤 Recipient's Name</label>
+                <input class="form-field" type="text" id="recipientInput"
+                       placeholder="e.g. Sarah, Daniel..." maxlength="50" autocomplete="off"/>
+            </div>
+
+            <!-- Note -->
+            <div class="form-block">
+                <label class="form-lbl" for="noteInput">📝 Birthday Note</label>
+                <textarea class="form-field form-textarea" id="noteInput" rows="3"
+                          placeholder="Happy Birthday! 🎂 God bless you..."></textarea>
+            </div>
+
+            <button class="gen-link-btn" id="genLinkBtn">✨ Generate Gift Link</button>
+
+            <div class="share-result" id="shareResult">
+                <input class="share-url-box" type="text" id="shareUrlBox" readonly aria-label="Shareable link"/>
+                <button class="copy-btn" id="copyBtn">📋 Copy</button>
+                <p class="copy-ok" id="copyOk">✅ Copied to clipboard!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CELEBRATION OVERLAY ========== -->
+    <div class="celeb-overlay" id="celebOverlay">
+        <div class="celeb-card">
+            <div class="celeb-quby" id="celebQuby"></div>
+            <h2 class="celeb-title">🎉 Yay!! 🎉</h2>
+            <p class="celeb-msg" id="celebMsg"> 💝</p>
+            <div class="confetti-zone" id="confettiZone"></div>
+            <button class="celeb-close" id="celebClose">💖 Thank You!</button>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer">
+ 
+        <!-- Line 1: credit + social icons -->
+        <div class="footer-line-one">
+            <span class="footer-credit">Made with <span class="heart-beat">❤️</span> by <strong>shanayaahom</strong></span>
+ 
+            <!-- Instagram -->
+            <a href="https://instagram.com/shanayaahom?igsh=ZGI1cWZpdzRhcWhx" class="soc-icon-btn soc-instagram"
+               target="_blank" rel="noopener" aria-label="Follow on Instagram">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="2" y="2" width="20" height="20" rx="6" ry="6"
+                          stroke="currentColor" stroke-width="2.2" fill="none"/>
+                    <circle cx="12" cy="12" r="4.5"
+                            stroke="currentColor" stroke-width="2.2" fill="none"/>
+                    <circle cx="17.5" cy="6.5" r="1.3" fill="currentColor"/>
+                </svg>
+            </a>
+ 
+            <!-- X (Twitter) -->
+            <a href="https://x.com/Ahom1063433" class="soc-icon-btn soc-x"
+               target="_blank" rel="noopener" aria-label="Follow on X">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L2.5 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+            </a>
+        </div>
+ 
+        <!-- Line 2: copyright -->
+        <p class="footer-copy">Copyright 2026 &copy; Birthday Bliss</p>
+ 
+    </footer>
+ 
+    <script src="script.js"></script>
+</body>
+</html>
