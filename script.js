@@ -12,10 +12,10 @@ let selectedType   = 'cake-flowers';
 let urlData        = {};
 
 /* ── Constants ── */
-const GIFT_EMOJIS = {
-  'cake-flowers':    '🎂🌸',
-  'cake-chocolates': '🎂🍫',
-  'cake-teddy':      '🎂🧸'
+const GIFT_IMAGES = {
+  'cake-flowers':    'gift-flowers.png',
+  'cake-chocolates': 'gift-chocolates.png',
+  'cake-teddy':      'gift-teddy.png'
 };
 
 const DEFAULT_NOTE = 'Happy Birthday! 🎂 God bless you always! 💝';
@@ -392,12 +392,13 @@ function openGift() {
   const stage  = document.getElementById('giftStage');
   const hint   = document.getElementById('tapHint');
   const surp   = document.getElementById('giftSurprise');
-  const emoji  = document.getElementById('surpriseEmoji');
   const row    = document.getElementById('actionRow');
   const note   = document.getElementById('bdayNote');
 
-  /* Set emoji based on gift type */
-  emoji.textContent = GIFT_EMOJIS[selectedType] || '🎂🌸';
+  /* Set sticker image based on gift type */
+  const sticker = document.getElementById('surpriseSticker');
+  sticker.src = GIFT_IMAGES[selectedType] || 'gift-flowers.png';
+  sticker.alt = selectedType.replace('-', ' & ');
 
   /* Trigger lid fly animation */
   stage.classList.add('opening');
@@ -582,6 +583,12 @@ function bindTiles() {
    INIT
    ========================================================= */
 function init() {
+  /* Preload gift sticker images */
+  Object.values(GIFT_IMAGES).forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+  
   /* Read URL */
   urlData = parseURL();
   applySharedGift();
