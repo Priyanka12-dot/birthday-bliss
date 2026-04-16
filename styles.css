@@ -1013,7 +1013,7 @@ body {
    ========================================================= */
 .send-fab {
   position: fixed;
-  bottom: 150px;
+  bottom: 145px;
   right: 18px;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: var(--white);
@@ -1352,7 +1352,7 @@ body {
 .balloon-right { right: 5%; }
  
 /* risen state — stops beside quby level */
-.balloon.risen { bottom: 42%; }
+.balloon.risen { bottom: 46%; }
  
 /* popped state */
 .balloon.popped .balloon-body { animation: balloonPop .3s ease forwards; }
