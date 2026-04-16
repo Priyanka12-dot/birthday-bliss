@@ -502,11 +502,17 @@ function generateLink() {
   const name  = document.getElementById('recipientInput').value.trim();
   const rawNote = document.getElementById('noteInput').value.trim();
   const note  = rawNote || DEFAULT_NOTE;
+  const currency = document.getElementById('shareCurrencySelect').value;
+  const amount   = document.getElementById('shareAmountInput').value.trim();
 
   const url = new URL(window.location.href.split('?')[0]);
   if (name)  url.searchParams.set('name', name);
   url.searchParams.set('gift', selectedType);
   url.searchParams.set('note', note);
+  if (currency && amount && !isNaN(amount) && Number(amount) > 0) {
+    url.searchParams.set('currency', currency);
+    url.searchParams.set('amount', parseFloat(amount).toFixed(2));
+  }
 
   const box = document.getElementById('shareUrlBox');
   box.value = url.toString();
@@ -548,11 +554,20 @@ function parseURL() {
   return {
     name: p.get('name') || '',
     gift: p.get('gift') || 'cake-flowers',
-    note: p.get('note') || DEFAULT_NOTE
+    note: p.get('note') || DEFAULT_NOTE,
+    currency: p.get('currency') || '',
+    amount:   p.get('amount')   || ''
   };
 }
 
 function applySharedGift() {
+const isSharedLink = !!window.location.search;
+ 
+  if (!isSharedLink) return; /* plain visit — sender view, widget stays visible */
+ 
+  /* ── Recipient view — hide the "Did you send?" widget entirely ── */
+  document.getElementById('didSendWidget').classList.add('hidden');
+ 
   if (!urlData.name && urlData.note === DEFAULT_NOTE &&
       urlData.gift === 'cake-flowers' &&
       !window.location.search) return; /* no params */
@@ -565,6 +580,17 @@ function applySharedGift() {
 
   selectedType = urlData.gift;
   document.getElementById('noteText').textContent = urlData.note;
+
+/* ── If sender included a money amount, queue balloon auto-launch ── */
+  if (urlData.currency && urlData.amount && Number(urlData.amount) > 0) {
+    const formatted = urlData.currency + parseFloat(urlData.amount).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    document.getElementById('balloonMsgLeft').textContent  = 'Just sent you ' + formatted + ' 💸';
+    document.getElementById('balloonMsgRight').textContent = 'Enjoy your birthday and have fun 🥳';
+    window._pendingBalloons = true;
+  }
 }
 
 /* =========================================================

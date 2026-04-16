@@ -689,6 +689,54 @@ body {
 
 .form-textarea { resize: vertical; min-height: 76px; }
 
+/* Share modal — money row */
+.optional-tag {
+  font-size: .6rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #bbf7d0, #86efac);
+  color: #14532d;
+  padding: .12rem .45rem;
+  border-radius: var(--radius-pill);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: .3rem;
+}
+ 
+.share-money-row {
+  display: flex;
+  gap: .55rem;
+  align-items: stretch;
+}
+ 
+.share-currency-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 1.5rem !important;
+  cursor: pointer;
+  min-width: 82px;
+  flex-shrink: 0;
+}
+ 
+.share-amount-input {
+  flex: 1;
+  min-width: 0;
+}
+ 
+/* hide number spin arrows */
+.share-amount-input::-webkit-outer-spin-button,
+.share-amount-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.share-amount-input[type=number] { -moz-appearance: textfield; }
+ 
+.money-hint {
+  font-size: .66rem;
+  color: var(--text-mid);
+  font-weight: 600;
+  margin-top: .32rem;
+  opacity: .8;
+  line-height: 1.4;
+}
+
 /* Generate button */
 .gen-link-btn {
   width: 100%;

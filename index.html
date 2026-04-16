@@ -173,8 +173,35 @@
                           placeholder="Happy Birthday! 🎂 God bless you..."></textarea>
             </div>
 
+            <!-- Money gift (optional) -->
+            <div class="form-block">
+                <label class="form-lbl">💸 Money Gift <span class="optional-tag">optional</span></label>
+                <div class="share-money-row">
+                    <div class="currency-wrap">
+                        <select class="form-field share-currency-select" id="shareCurrencySelect" aria-label="Currency">
+                            <option value="" data-symbol="">None</option>
+                            <option value="$" data-symbol="$">$ USD</option>
+                            <option value="€" data-symbol="€">€ EUR</option>
+                            <option value="£" data-symbol="£">£ GBP</option>
+                            <option value="¥" data-symbol="¥">¥ JPY</option>
+                            <option value="₦" data-symbol="₦">₦ NGN</option>
+                            <option value="₹" data-symbol="₹">₹ INR</option>
+                            <option value="C$" data-symbol="C$">C$ CAD</option>
+                            <option value="A$" data-symbol="A$">A$ AUD</option>
+                            <option value="R" data-symbol="R">R ZAR</option>
+                            <option value="د.إ" data-symbol="د.إ">د.إ AED</option>
+                        </select>
+                        <span class="select-arrow">▾</span>
+                    </div>
+                    <input class="form-field share-amount-input" type="number"
+                           id="shareAmountInput" placeholder="Amount e.g. 50.00"
+                           min="0" step="0.01" aria-label="Amount sent"/>
+                </div>
+                <p class="money-hint">💡 Fill this if you already sent money — balloon will appear for recipient!</p>
+            </div>
+ 
             <button class="gen-link-btn" id="genLinkBtn">✨ Generate Gift Link</button>
-
+ 
             <div class="share-result" id="shareResult">
                 <input class="share-url-box" type="text" id="shareUrlBox" readonly aria-label="Shareable link"/>
                 <button class="copy-btn" id="copyBtn">📋 Copy</button>
