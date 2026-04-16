@@ -413,6 +413,12 @@ function openGift() {
 
     /* Show buttons */
     row.classList.add('show');
+  
+    /* Fire pending balloons if money was entered before box opened */
+    if (window._pendingBalloons) {
+      window._pendingBalloons = false;
+      setTimeout(launchBalloons, 600);
+    }
   }, 640);
 }
 
@@ -580,6 +586,138 @@ function bindTiles() {
 }
 
 /* =========================================================
+   PAYMENT MODAL
+   ========================================================= */
+function openPaymentModal() {
+  initAudio(); /* unblock audio context on user gesture */
+  document.getElementById('payModalVeil').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+ 
+function closePaymentModal() {
+  document.getElementById('payModalVeil').classList.remove('show');
+  document.body.style.overflow = '';
+}
+ 
+/* =========================================================
+   MONEY AMOUNT MODAL
+   ========================================================= */
+function openMoneyModal() {
+  document.getElementById('moneyModalVeil').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('moneyInput').focus(), 300);
+}
+ 
+function closeMoneyModal() {
+  document.getElementById('moneyModalVeil').classList.remove('show');
+  document.body.style.overflow = '';
+}
+ 
+/* =========================================================
+   DID YOU SEND — YES / NO
+   ========================================================= */
+function onDidSendYes() {
+  openMoneyModal();
+}
+ 
+function onDidSendNo() {
+  /* No money sent — hide the widget and do nothing with balloons */
+  document.getElementById('didSendWidget').classList.add('hidden');
+}
+ 
+/* =========================================================
+   MONEY OK — confirm amount, show balloons
+   ========================================================= */
+function onMoneyOk() {
+  const select   = document.getElementById('currencySelect');
+  const symbol   = select.value;
+  const amount   = document.getElementById('moneyInput').value.trim();
+ 
+  if (!amount || isNaN(amount) || Number(amount) <= 0) {
+    document.getElementById('moneyInput').style.borderColor = '#ef4444';
+    document.getElementById('moneyInput').focus();
+    setTimeout(() => {
+      document.getElementById('moneyInput').style.borderColor = '';
+    }, 1000);
+    return;
+  }
+ 
+  const formatted = symbol + parseFloat(amount).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+ 
+  closeMoneyModal();
+  document.getElementById('didSendWidget').classList.add('hidden');
+ 
+  /* Update balloon messages */
+  document.getElementById('balloonMsgLeft').textContent  = 'Just sent you ' + formatted + ' 💸';
+  document.getElementById('balloonMsgRight').textContent = 'Enjoy your birthday and have fun 🥳';
+ 
+  /* Launch balloons only if gift is already opened, else queue */
+  if (giftOpened) {
+    launchBalloons();
+  } else {
+    window._pendingBalloons = true;
+  }
+}
+ 
+/* =========================================================
+   BALLOON LAUNCH + POP
+   ========================================================= */
+function playBalloonPop(delay) {
+  setTimeout(() => {
+    const ctx = initAudio();
+    const t   = ctx.currentTime + 0.02;
+    /* Sharp transient burst */
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.12, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.03));
+    }
+    const src  = ctx.createBufferSource();
+    const gain = ctx.createGain();
+    const filt = ctx.createBiquadFilter();
+    src.buffer = buf;
+    filt.type  = 'bandpass';
+    filt.frequency.value = 800;
+    filt.Q.value = 0.5;
+    src.connect(filt);
+    filt.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(1.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    src.start(t);
+    src.stop(t + 0.12);
+  }, delay);
+}
+ 
+function launchBalloons() {
+  const leftBalloon  = document.getElementById('balloonLeft');
+  const rightBalloon = document.getElementById('balloonRight');
+  const wrap         = document.getElementById('balloonWrap');
+ 
+  /* Make wrap interactive for a moment */
+  wrap.style.pointerEvents = 'none';
+ 
+  /* Rise up */
+  leftBalloon.classList.add('risen');
+  setTimeout(() => rightBalloon.classList.add('risen'), 200);
+ 
+  /* Pop left balloon after 3.2s */
+  setTimeout(() => {
+    leftBalloon.classList.add('popped');
+    playBalloonPop(0);
+  }, 3200);
+ 
+  /* Pop right balloon 400ms after left */
+  setTimeout(() => {
+    rightBalloon.classList.add('popped');
+    playBalloonPop(0);
+  }, 3600);
+}
+
+/* =========================================================
    INIT
    ========================================================= */
 function init() {
@@ -627,9 +765,34 @@ function init() {
   /* Gift tiles */
   bindTiles();
 
-  /* Keyboard ESC closes modal */
+  /* Send 💸 FAB */
+  document.getElementById('sendBtn').addEventListener('click', openPaymentModal);
+  document.getElementById('closePayModal').addEventListener('click', closePaymentModal);
+  document.getElementById('payModalVeil').addEventListener('click', e => {
+    if (e.target === document.getElementById('payModalVeil')) closePaymentModal();
+  });
+ 
+  /* Did you send? widget */
+  document.getElementById('dsSendYes').addEventListener('click', onDidSendYes);
+  document.getElementById('dsSendNo').addEventListener('click', onDidSendNo);
+
+  /* Money amount modal */
+  document.getElementById('closeMoneyModal').addEventListener('click', closeMoneyModal);
+  document.getElementById('moneyModalVeil').addEventListener('click', e => {
+    if (e.target === document.getElementById('moneyModalVeil')) closeMoneyModal();
+  });
+  document.getElementById('moneyOkBtn').addEventListener('click', onMoneyOk);
+  document.getElementById('moneyInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') onMoneyOk();
+  });
+
+  /* Keyboard ESC closes all modals */
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeShareModal();
+    if (e.key === 'Escape') {
+      closeShareModal();
+      closePaymentModal();
+      closeMoneyModal();
+    }
   });
 }
 

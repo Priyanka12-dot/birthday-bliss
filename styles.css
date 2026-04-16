@@ -961,6 +961,437 @@ body {
 }
 
 /* =========================================================
+   SEND 💸 FAB
+   ========================================================= */
+.send-fab {
+  position: fixed;
+  bottom: 130px;
+  right: 18px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: var(--white);
+  font-family: 'Bubblegum Sans', cursive;
+  font-size: .95rem;
+  letter-spacing: .03em;
+  padding: .7rem 1.4rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 6px 22px rgba(22,163,74,.45), 0 2px 8px rgba(22,163,74,.25);
+  transition: transform var(--transition), box-shadow var(--transition);
+  animation: fabPulse2 3s ease-in-out infinite .8s;
+}
+ 
+@keyframes fabPulse2 {
+  0%,100% { box-shadow: 0 6px 22px rgba(22,163,74,.45); }
+  50%      { box-shadow: 0 8px 30px rgba(22,163,74,.7); }
+}
+ 
+.send-fab:hover {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 12px 32px rgba(22,163,74,.6);
+  animation: none;
+}
+ 
+/* =========================================================
+   PAYMENT MODAL
+   ========================================================= */
+.pay-modal {
+  background: linear-gradient(155deg, var(--white) 0%, #f0fdf4 100%);
+  border: 2px solid rgba(255,255,255,.9);
+  border-radius: var(--radius-xl);
+  padding: 1.8rem 1.5rem;
+  width: 100%;
+  max-width: 380px;
+  position: relative;
+  box-shadow: 0 24px 70px rgba(22,163,74,.25);
+  animation: modalPop .4s cubic-bezier(.34,1.56,.64,1);
+}
+ 
+.pay-options {
+  display: flex;
+  flex-direction: column;
+  gap: .9rem;
+  margin-top: .4rem;
+}
+ 
+.pay-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  border: 2px solid transparent;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, border-color .2s;
+  position: relative;
+  overflow: hidden;
+}
+ 
+.pay-option::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .2s;
+}
+ 
+.pay-option:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+ 
+.pay-option:hover::before { opacity: 1; }
+ 
+/* PayPal */
+.pay-paypal {
+  background: linear-gradient(135deg, #f0f6ff, #e8f0fe);
+  border-color: #bfdbfe;
+  box-shadow: 0 4px 14px rgba(0,48,135,.12);
+}
+.pay-paypal:hover {
+  border-color: #003087;
+  box-shadow: 0 8px 24px rgba(0,48,135,.22);
+}
+ 
+/* Stripe */
+.pay-stripe {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border-color: #ddd6fe;
+  box-shadow: 0 4px 14px rgba(99,91,255,.12);
+}
+.pay-stripe:hover {
+  border-color: #635bff;
+  box-shadow: 0 8px 24px rgba(99,91,255,.25);
+}
+ 
+.pay-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+ 
+.pay-paypal .pay-icon-wrap { background: linear-gradient(135deg, #e8f0fe, #d0e4ff); }
+.pay-stripe .pay-icon-wrap  { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+ 
+.pay-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .12rem;
+}
+ 
+.pay-name {
+  font-family: 'Bubblegum Sans', cursive;
+  font-size: 1.05rem;
+  color: var(--text-dark);
+}
+ 
+.pay-desc {
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  opacity: .75;
+}
+ 
+.pay-arrow {
+  font-size: 1.2rem;
+  color: var(--text-mid);
+  opacity: .5;
+  transition: transform .2s, opacity .2s;
+}
+ 
+.pay-option:hover .pay-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+ 
+/* =========================================================
+   DID YOU SEND 💸 WIDGET  (bottom-left)
+   ========================================================= */
+.did-send-widget {
+  position: fixed;
+  bottom: 72px;
+  left: 12px;
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.8px solid rgba(34,197,94,.3);
+  border-radius: 18px;
+  padding: .55rem .75rem .6rem;
+  z-index: 100;
+  box-shadow: 0 6px 22px rgba(22,163,74,.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+  animation: slideInLeft .4s cubic-bezier(.34,1.56,.64,1);
+  min-width: 140px;
+}
+ 
+.did-send-widget.hidden { display: none; }
+ 
+@keyframes slideInLeft {
+  from { transform: translateX(-28px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+ 
+.did-send-label {
+  font-size: .7rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+ 
+.did-send-btns {
+  display: flex;
+  gap: .4rem;
+}
+ 
+.ds-btn {
+  font-family: 'Bubblegum Sans', cursive;
+  font-size: .78rem;
+  padding: .28rem .75rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+ 
+.ds-btn:hover { transform: scale(1.08); }
+ 
+.ds-yes {
+  background: linear-gradient(135deg, #4ade80, #16a34a);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(22,163,74,.4);
+}
+ 
+.ds-no {
+  background: linear-gradient(135deg, #fb7185, #e11d48);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(225,29,72,.35);
+}
+ 
+/* =========================================================
+   MONEY AMOUNT MODAL
+   ========================================================= */
+.money-modal {
+  background: linear-gradient(155deg, var(--white) 0%, #fefce8 100%);
+  border: 2px solid rgba(255,255,255,.9);
+  border-radius: var(--radius-xl);
+  padding: 1.8rem 1.5rem;
+  width: 100%;
+  max-width: 340px;
+  position: relative;
+  box-shadow: 0 24px 70px rgba(234,179,8,.2);
+  animation: modalPop .4s cubic-bezier(.34,1.56,.64,1);
+}
+ 
+.money-input-row {
+  display: flex;
+  gap: .55rem;
+  margin: .9rem 0;
+  align-items: stretch;
+}
+ 
+.currency-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+ 
+.currency-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: .7rem .95rem .7rem .7rem;
+  border: 2px solid var(--pink-1);
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  background: var(--white);
+  cursor: pointer;
+  padding-right: 1.6rem;
+  outline: none;
+  transition: border-color .2s;
+}
+ 
+.currency-select:focus { border-color: var(--pink-3); }
+ 
+.select-arrow {
+  position: absolute;
+  right: .45rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .75rem;
+  color: var(--text-mid);
+  pointer-events: none;
+}
+ 
+.money-input {
+  flex: 1;
+  padding: .7rem .95rem;
+  border: 2px solid var(--pink-1);
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  background: var(--white);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  min-width: 0;
+}
+ 
+.money-input:focus {
+  border-color: #eab308;
+  box-shadow: 0 0 0 3px rgba(234,179,8,.15);
+}
+ 
+/* hide browser number spin arrows */
+.money-input::-webkit-outer-spin-button,
+.money-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.money-input[type=number] { -moz-appearance: textfield; }
+ 
+.ok-btn {
+  width: 100%;
+  padding: .82rem;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #78350f;
+  font-family: 'Bubblegum Sans', cursive;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  box-shadow: 0 5px 18px rgba(245,158,11,.4);
+  transition: transform var(--transition), box-shadow var(--transition);
+  letter-spacing: .03em;
+}
+ 
+.ok-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 10px 26px rgba(245,158,11,.55);
+}
+ 
+/* =========================================================
+   BALLOONS
+   ========================================================= */
+.balloon-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 90;
+  overflow: hidden;
+}
+ 
+.balloon {
+  position: absolute;
+  bottom: -260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: bottom 1.8s cubic-bezier(.22,.61,.36,1);
+}
+ 
+.balloon-left  { left: 5%; }
+.balloon-right { right: 5%; }
+ 
+/* risen state — stops beside quby level */
+.balloon.risen { bottom: 22%; }
+ 
+/* popped state */
+.balloon.popped .balloon-body { animation: balloonPop .3s ease forwards; }
+ 
+@keyframes balloonPop {
+  0%   { transform: scale(1);    opacity: 1; }
+  40%  { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(0);    opacity: 0; }
+}
+ 
+.balloon-body {
+  width: 95px;
+  height: 115px;
+  border-radius: 50% 50% 48% 48% / 52% 52% 48% 48%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset -8px -6px 0 rgba(0,0,0,.12), 0 8px 22px rgba(0,0,0,.18);
+  animation: balloonSway 3.5s ease-in-out infinite;
+}
+ 
+.balloon-left  .balloon-body { animation-delay: 0s; }
+.balloon-right .balloon-body { animation-delay: .6s; }
+ 
+@keyframes balloonSway {
+  0%,100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+ 
+/* Knot at bottom */
+.balloon-body::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: inherit;
+  filter: brightness(.75);
+}
+ 
+.balloon-left-color  { background: linear-gradient(145deg, #fb7185, #f43f5e); }
+.balloon-right-color { background: linear-gradient(145deg, #60a5fa, #3b82f6); }
+ 
+.balloon-shine {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: 18px;
+  height: 28px;
+  background: rgba(255,255,255,.38);
+  border-radius: 50%;
+  transform: rotate(-28deg);
+}
+ 
+.balloon-msg {
+  font-family: 'Bubblegum Sans', cursive;
+  font-size: .62rem;
+  color: #fff;
+  text-align: center;
+  line-height: 1.35;
+  padding: 0 .5rem;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+ 
+.balloon-string {
+  width: 1.5px;
+  height: 70px;
+  background: linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.08));
+  margin-top: 0;
+}
+ 
+/* Responsive adjustments for new elements */
+@media (max-width: 440px) {
+  .send-fab       { right: 12px; bottom: 173px; padding: .65rem 1.2rem; font-size: .88rem; }
+  .did-send-widget { left: 8px; bottom: 68px; min-width: 125px; }
+  .balloon-body   { width: 80px; height: 98px; }
+  .balloon-msg    { font-size: .56rem; }
+  .balloon-string { height: 55px; }
+}
+
+/* =========================================================
    UTILITY ANIMATIONS
    ========================================================= */
 @keyframes fadeUpIn {
