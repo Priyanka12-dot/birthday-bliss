@@ -1157,6 +1157,32 @@ body {
   opacity: 1;
 }
  
+/* ── Ko-fi ── */
+.pay-kofi {
+  background: linear-gradient(135deg, #fff5f5, #fff0ee);
+  border-color: #ffcfcc;
+  box-shadow: 0 4px 14px rgba(255,94,91,.14);
+}
+ 
+.pay-kofi:hover {
+  border-color: #FF5E5B;
+  box-shadow: 0 8px 24px rgba(255,94,91,.28);
+}
+ 
+.pay-kofi .pay-icon-wrap {
+  background: linear-gradient(135deg, #ffe8e8, #ffd5d3);
+}
+ 
+.pay-kofi .pay-name {
+  background: linear-gradient(135deg, #FF5E5B, #e84040);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+ 
+.pay-kofi .pay-desc { color: #c0392b; opacity: .7; }
+ 
+ 
 /* =========================================================
    DID YOU SEND 💸 WIDGET  (bottom-left)
    ========================================================= */
