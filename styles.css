@@ -1156,6 +1156,33 @@ body {
   transform: translateX(4px);
   opacity: 1;
 }
+
+* ── Payment divider ── */
+.pay-divider {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  margin: .2rem 0;
+}
+ 
+.pay-divider::before,
+.pay-divider::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: linear-gradient(to right, transparent, var(--pink-1), transparent);
+  border-radius: 99px;
+}
+ 
+.pay-divider span {
+  font-size: .65rem;
+  font-weight: 800;
+  color: var(--text-mid);
+  opacity: .65;
+  white-space: nowrap;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
  
 /* ── Ko-fi ── */
 .pay-kofi {
