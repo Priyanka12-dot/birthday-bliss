@@ -744,6 +744,234 @@ function launchBalloons() {
 }
 
 /* =========================================================
+   DOWNLOAD BIRTHDAY CARD  (Canvas API)
+   ========================================================= */
+ 
+/* Rounded rect helper — uses native roundRect if available */
+function canvasRoundRect(ctx, x, y, w, h, r) {
+  if (ctx.roundRect) {
+    ctx.roundRect(x, y, w, h, r);
+  } else {
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+}
+ 
+/* Seeded random for deterministic scatter decorations */
+function seededRand(seed) {
+  let s = seed;
+  return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+}
+ 
+const GIFT_LABELS = {
+  'cake-flowers':    { name: 'Cake & Flowers',    emoji: '🎂🌸' },
+  'cake-chocolates': { name: 'Cake & Chocolates', emoji: '🎂🍫' },
+  'cake-teddy':      { name: 'Cake & Teddy',      emoji: '🎂🧸' }
+};
+ 
+async function downloadBirthdayCard() {
+  const btn = document.getElementById('downloadCardBtn');
+  btn.classList.add('downloading');
+  btn.querySelector('.dl-icon').textContent = '⏳';
+ 
+  try {
+    /* Wait for all web fonts to be ready */
+    await document.fonts.ready;
+ 
+    const W = 1080, H = 1080;
+    const canvas = document.createElement('canvas');
+    canvas.width  = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    const rand = seededRand(42);
+ 
+    /* ── 1. Background gradient ── */
+    const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+    bgGrad.addColorStop(0,   '#fce7f3');
+    bgGrad.addColorStop(0.3, '#f5d0fe');
+    bgGrad.addColorStop(0.65,'#e9d5ff');
+    bgGrad.addColorStop(1,   '#ddd6fe');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, W, H);
+ 
+    /* ── 2. Decorative confetti dots ── */
+    const dotColors = ['#fb7185','#fbbf24','#34d399','#60a5fa','#f0abfc','#818cf8','#ff9eb5'];
+    for (let i = 0; i < 90; i++) {
+      ctx.save();
+      ctx.globalAlpha = 0.22 + rand() * 0.28;
+      ctx.fillStyle   = dotColors[i % dotColors.length];
+      const x = rand() * W;
+      const y = rand() * H;
+      const rx = 4 + rand() * 8;
+      const ry = 4 + rand() * 8;
+      ctx.beginPath();
+      ctx.ellipse(x, y, rx, ry, rand() * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+ 
+    /* ── 3. Scattered emoji sparkles ── */
+    ctx.save();
+    const sparkles = ['✨','⭐','💫','🌸','💝','🎀','🌟','🎊'];
+    ctx.font = '36px serif';
+    ctx.globalAlpha = 0.55;
+    for (let i = 0; i < 22; i++) {
+      const sx = rand() * W;
+      const sy = rand() * H;
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate((rand() - 0.5) * 0.8);
+      ctx.fillText(sparkles[i % sparkles.length], 0, 0);
+      ctx.restore();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+ 
+    /* ── 4. Gift sticker image ── */
+    const stickerSrc = GIFT_IMAGES[selectedType] || 'gift-flowers.png';
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    await new Promise((res, rej) => {
+      img.onload = res;
+      img.onerror = rej;
+      img.src = stickerSrc;
+    });
+ 
+    const sW = 520, sH = 520;
+    const sX = (W - sW) / 2;
+    const sY = 70;
+ 
+    /* Drop shadow for sticker */
+    ctx.save();
+    ctx.shadowColor = 'rgba(233,30,140,.18)';
+    ctx.shadowBlur  = 40;
+    ctx.shadowOffsetY = 14;
+    ctx.drawImage(img, sX, sY, sW, sH);
+    ctx.restore();
+ 
+    /* ── 5. Frosted card panel ── */
+    const panelX = 54, panelY = 600, panelW = W - 108, panelH = 390, panelR = 44;
+    ctx.save();
+    ctx.beginPath();
+    canvasRoundRect(ctx, panelX, panelY, panelW, panelH, panelR);
+    /* Glass fill */
+    const panelGrad = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelH);
+    panelGrad.addColorStop(0, 'rgba(255,255,255,.88)');
+    panelGrad.addColorStop(1, 'rgba(255,255,255,.76)');
+    ctx.fillStyle = panelGrad;
+    ctx.fill();
+    /* Soft border */
+    ctx.strokeStyle = 'rgba(233,30,140,.16)';
+    ctx.lineWidth   = 2.5;
+    ctx.stroke();
+    ctx.restore();
+ 
+    /* ── 6. Decorative top rule inside panel ── */
+    const ruleY = panelY + 42;
+    const ruleGrad = ctx.createLinearGradient(panelX + 40, 0, panelX + panelW - 40, 0);
+    ruleGrad.addColorStop(0,   'rgba(233,30,140,0)');
+    ruleGrad.addColorStop(0.5, 'rgba(233,30,140,.35)');
+    ruleGrad.addColorStop(1,   'rgba(233,30,140,0)');
+    ctx.strokeStyle = ruleGrad;
+    ctx.lineWidth   = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(panelX + 40, ruleY);
+    ctx.lineTo(panelX + panelW - 40, ruleY);
+    ctx.stroke();
+ 
+    /* ── 7. Text content ── */
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+ 
+    /* "I just received" — small caps label */
+    ctx.font      = '700 34px Nunito, Arial, sans-serif';
+    ctx.fillStyle = 'rgba(107,33,168,.65)';
+    ctx.fillText('I just received', W / 2, panelY + 82);
+ 
+    /* Gift type name — big bold */
+    const giftLabel = GIFT_LABELS[selectedType] || { name: 'Birthday Gift', emoji: '🎁' };
+    ctx.font      = '900 68px "Bubblegum Sans", Georgia, serif';
+    const nameGrad = ctx.createLinearGradient(panelX + 60, 0, panelX + panelW - 60, 0);
+    nameGrad.addColorStop(0, '#e91e8c');
+    nameGrad.addColorStop(1, '#7c3aed');
+    ctx.fillStyle = nameGrad;
+    ctx.fillText(giftLabel.name, W / 2, panelY + 158);
+ 
+    /* Gift emoji */
+    ctx.font      = '56px serif';
+    ctx.globalAlpha = 1;
+    ctx.fillText(giftLabel.emoji, W / 2, panelY + 230);
+ 
+    /* Divider dots */
+    const dotY = panelY + 274;
+    ['#fb7185','#fbbf24','#34d399','#60a5fa','#f0abfc'].forEach((c, i) => {
+      ctx.beginPath();
+      ctx.arc(W / 2 - 48 + i * 24, dotY, 5, 0, Math.PI * 2);
+      ctx.fillStyle = c;
+      ctx.globalAlpha = 0.7;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+ 
+    /* Recipient / birthday message */
+    const recipientName = urlData.name;
+    const bdayLine = recipientName
+      ? `Happy Birthday, ${recipientName}! 🎉`
+      : 'Happy Birthday to me! 🎉';
+    ctx.font      = '800 40px Nunito, Arial, sans-serif';
+    ctx.fillStyle = '#e91e8c';
+    ctx.fillText(bdayLine, W / 2, panelY + 316);
+ 
+    /* Thank you line */
+    ctx.font      = '700 33px Nunito, Arial, sans-serif';
+    ctx.fillStyle = '#7c3aed';
+    ctx.fillText('Thank you so much! 💝', W / 2, panelY + 364);
+ 
+    /* ── 8. Bottom branding strip ── */
+    ctx.font      = '600 28px Nunito, Arial, sans-serif';
+    ctx.fillStyle = 'rgba(107,33,168,.45)';
+    ctx.fillText('🎂 Birthday Bliss', W / 2, panelY + panelH - 28);
+ 
+    /* ── 9. Corner hearts ── */
+    ctx.font = '38px serif';
+    ctx.globalAlpha = 0.55;
+    ctx.fillText('💝', panelX + 42, panelY + 42);
+    ctx.fillText('💝', panelX + panelW - 42, panelY + 42);
+    ctx.globalAlpha = 1;
+ 
+    /* ── 10. Download ── */
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href     = url;
+      a.download = 'birthday-bliss-card.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+ 
+      /* Reset button */
+      btn.classList.remove('downloading');
+      btn.querySelector('.dl-icon').textContent = '⬇️';
+    }, 'image/png');
+ 
+  } catch (err) {
+    console.error('Card generation failed:', err);
+    btn.classList.remove('downloading');
+    btn.querySelector('.dl-icon').textContent = '⬇️';
+    alert('Could not generate card. Please try again!');
+  }
+}
+
+/* =========================================================
    INIT
    ========================================================= */
 function init() {
@@ -783,10 +1011,11 @@ function init() {
   document.getElementById('genLinkBtn').addEventListener('click', generateLink);
   document.getElementById('copyBtn').addEventListener('click', copyLink);
 
-  /* Celebration close */
+  /* Celebration close + download card */
   document.getElementById('celebClose').addEventListener('click', () => {
     document.getElementById('celebOverlay').classList.remove('show');
   });
+   document.getElementById('downloadCardBtn').addEventListener('click', downloadBirthdayCard);
 
   /* Gift tiles */
   bindTiles();
